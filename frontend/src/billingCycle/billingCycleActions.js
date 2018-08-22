@@ -4,7 +4,7 @@ import { reset as resetForm, initialize } from 'redux-form'
 import { selectTab, showTabs } from '../common/tab/tabActions'
 
 const BASE_URL = 'http://localhost:3003/api'
-const INITIAL_VALUE = []
+const INITIAL_VALUE = {}
 
 export function getList() {
     const request = axios.get(`${BASE_URL}/billingCycles`)
@@ -15,15 +15,21 @@ export function getList() {
 }
 
 export function create(values) {   
+    return submit(values, 'post')
+}
+
+export function update(values) {
+    return submit(values, 'put')
+}
+
+function submit(values, method) {
+    const id = values._id ? values._id : ''
     return dispatch => {
-        axios.post(`${BASE_URL}/billingCycles`, values)
+        axios[method](`${BASE_URL}/billingCycles/${id}`, values)
             .then(resp => {
                 toastr.success('Sucesso', 'Operação realizada com sucesso')
                 dispatch([
-                    resetForm('billingCycleForm'),
-                    getList(),
-                    selectTab('tabList'),
-                    showTabs('tabList', 'tabCreate')    
+                    init()    
                 ])
             }).catch(e => {
                 e.response.data.errors.forEach(e => toastr.error('Erro', e)) 
@@ -37,23 +43,6 @@ export function showUpdate(billingCycle) {
         selectTab('tabUpdate'),
         initialize('billingCycleForm', billingCycle)
     ]
-}
-
-export function update(billingCycle) {
-    return dispatch => {
-        axios.put(`${BASE_URL}/billingCycles/${billingCycle._id}`, billingCycle)
-            .then(resp => {
-                toastr.success('Sucesso', 'Operação realizada com sucesso')
-                dispatch([
-                    resetForm('billingCycleForm'),
-                    getList(),
-                    selectTab('tabList'),
-                    showTabs('tabList', 'tabCreate')    
-                ])
-            }).catch(e => {
-                e.response.data.errors.forEach(e => toastr.error('Erro', e)) 
-            })
-    }
 }
 
 export function init() {
