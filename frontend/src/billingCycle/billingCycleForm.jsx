@@ -5,11 +5,23 @@ import { reduxForm, Field, formValueSelector } from 'redux-form'
 
 import { init } from '../billingCycle/billingCycleActions'
 import Input from '../common/form/labelAndInput'
-import ItemList from './itemList';
+import ItemList from './itemList'
+import Summary from './summary'
 
 class BillingCycleForm extends Component {
+
+    calculateSummary() {
+        const sum = (v, t) => v + t
+        return {
+            sumOfCredits: this.props.credits.map(credit => +credit.value || 0).reduce(sum),
+            sumOfDebts: this.props.debts.map(debt => +debt.value || 0).reduce(sum)
+        }
+    }
+
     render() {
         const { handleSubmit, readOnly, credits, debts } = this.props            // --> const handleSubmit =  this.props.handleSubmit
+        const sumOfCredits = this.calculateSummary().sumOfCredits                // const { sumOfCredits, sumOfDebts } = this.calculateSummary()
+        const sumOfDebts = this.calculateSummary().sumOfDebts
         return (
             <div>
                 <form role='form' onSubmit={handleSubmit}>
@@ -17,8 +29,9 @@ class BillingCycleForm extends Component {
                         <Field name='name' cols='12 4' placeholder='Preencha com o nome' readOnly={readOnly} component={Input} />
                         <Field name='month' cols='12 4' placeholder='Preencha com o mês' type='number' readOnly={readOnly} component={Input} />
                         <Field name='year' cols='12 4' placeholder='Preencha com o ano' type='number' readOnly={readOnly} component={Input} />
+                        <Summary cols='12 4' credit={sumOfCredits} debt={sumOfDebts} />
                         <ItemList list={credits} field='credits' title='Créditos' cols='12 6' readOnly={readOnly} showStatus={false} />
-                        <ItemList list={debts}  field='debts' title='Débitos' cols='12 6' readOnly={readOnly} showStatus={true} />
+                        <ItemList list={debts} field='debts' title='Débitos' cols='12 6' readOnly={readOnly} showStatus={true} />
                     </div>
                     <div className='box-footer'>   
                         <button type='submit' className={`btn btn-${this.props.submitClass}`}>{this.props.submitMethod}</button>
