@@ -5,7 +5,8 @@ import { selectTab, showTabs } from '../common/tab/tabActions'
 
 const BASE_URL = 'http://localhost:3003/api'
 const INITIAL_VALUE = {
-    credits: [{}]
+    credits: [{}],
+    debts: [{}]
 }          // initial values of the form, they are called on function init()
 
 export function getList() {
